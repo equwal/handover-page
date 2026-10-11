@@ -1,0 +1,13 @@
+[project]
+name = "handover-page"
+version = "0.1.0"
+description = "Render a hand-over page from memstate"
+requires-python = ">=3.11"
+license = {file = "LICENSE"}
+
+[tool.ruff]
+line-length = 110
+
+[tool.ruff.lint]
+select = ["E", "F", "UP", "B"]
+ignore = ["E501"]  # ruff format wraps code; CSS and comment lines stay long
