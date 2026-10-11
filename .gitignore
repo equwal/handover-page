@@ -1,0 +1,7 @@
+handover.html
+*.tmp
+__pycache__/
+.hypothesis/
+.pytest_cache/
+.env
+
