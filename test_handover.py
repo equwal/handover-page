@@ -1,8 +1,12 @@
 import time
 
-from hypothesis import given, strategies as st
+from hypothesis import HealthCheck, given, settings, strategies as st
 
 import handover
+
+# The first text() draw builds Hypothesis's Unicode table (about 1.5 s cold), which trips too_slow.
+settings.register_profile("cold", suppress_health_check=[HealthCheck.too_slow])
+settings.load_profile("cold")
 
 NOW = int(time.time())
 memory = st.fixed_dictionaries(
