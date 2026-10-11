@@ -1,18 +1,20 @@
-"""Render a hand-over page from memstate, in the style of dickt.store/human.html.
+"""Render a hand-over page from memstate and open it in the browser.
 
-  py -3 handover.py [--out human.html] [--days 7] [--project ID ...] [--addr HOST:PORT]
+  py -3 handover.py [--out handover.html] [--no-open] [--days 7] [--project ID ...] [--addr HOST:PORT]
 
 Reads the memstate daemon's HTTP API (MEMSTATE_ADDR). Writes one local HTML file.
-Sends nothing anywhere. Costs no AI tokens, so it can run from a Stop hook after every turn.
+Sends nothing anywhere. Costs no AI tokens, so it can run from a Stop hook (with --no-open).
 """
 
 import argparse
 import html
 import json
 import os
+import pathlib
 import re
 import time
 import urllib.request
+import webbrowser
 from collections import defaultdict
 
 # ponytail: keyword match on keypath and category; add a "needs_user" category to memstate if this misses items.
@@ -117,7 +119,8 @@ def render(rows, days):
 
 def main():
     ap = argparse.ArgumentParser(description="Render a hand-over page from memstate.")
-    ap.add_argument("--out", default="human.html")
+    ap.add_argument("--out", default="handover.html")
+    ap.add_argument("--no-open", action="store_true", help="do not open the page in the browser")
     ap.add_argument("--days", type=int, default=7)
     ap.add_argument("--project", action="append", default=[])
     ap.add_argument("--addr", default=os.environ.get("MEMSTATE_ADDR", "127.0.0.1:8767"))
@@ -127,7 +130,10 @@ def main():
     with open(tmp, "w", encoding="utf-8") as f:
         f.write(render(rows, a.days))
     os.replace(tmp, a.out)  # readers never see a half-written page
-    print(f"{a.out}: {len(rows)} memories")
+    uri = pathlib.Path(a.out).resolve().as_uri()
+    print(f"{uri}: {len(rows)} memories")
+    if not a.no_open:
+        webbrowser.open(uri)
 
 
 if __name__ == "__main__":
